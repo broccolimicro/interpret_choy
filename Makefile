@@ -1,6 +1,6 @@
-NAME          = interpret_wv
-DEPEND        = weaver arithmetic boolean interpret_arithmetic parse_ucs parse_expression parse common
-TEST_DEPEND   = weaver arithmetic boolean interpret_arithmetic parse_ucs parse_expression parse common
+NAME          = interpret_choy
+DEPEND        = choy arithmetic boolean interpret_arithmetic parse_choy parse_expression parse common
+TEST_DEPEND   = choy arithmetic boolean interpret_arithmetic parse_choy parse_expression parse common
 
 COVERAGE ?= 0
 

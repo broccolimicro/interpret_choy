@@ -3,14 +3,14 @@
 #include <common/standard.h>
 #include <common/net.h>
 
-#include <parse_ucs/expression.h>
-#include <parse_ucs/modfile.h>
-#include <parse_ucs/type_name.h>
-#include <parse_ucs/function_decl.h>
-#include <parse_ucs/function.h>
+#include <parse_choy/expression.h>
+#include <parse_choy/modfile.h>
+#include <parse_choy/type_name.h>
+#include <parse_choy/function_decl.h>
+#include <parse_choy/function.h>
 
-#include <weaver/project.h>
-#include <weaver/program.h>
+#include <choy/project.h>
+#include <choy/program.h>
 
 #include <arithmetic/expression.h>
 #include <arithmetic/state.h>
@@ -18,7 +18,7 @@
 
 #include <interpret_arithmetic/export.h>
 
-namespace parse_ucs {
+namespace parse_choy {
 
 string export_value(const arithmetic::Value &v);
 
@@ -53,10 +53,10 @@ parse_expression::expression export_composition(const arithmetic::Choice &expr, 
 
 
 
-parse_ucs::function::declaration export_declaration(const weaver::Program &prgm, const weaver::Instance &inst);
-parse_ucs::type_name export_type_name(const weaver::Program &prgm, weaver::TypeId id);
-parse_ucs::function_decl export_decl(const weaver::Program &prgm, const weaver::Decl &decl);
+parse_choy::function::declaration export_declaration(const choy::Program &prgm, const choy::Instance &inst);
+parse_choy::type_name export_type_name(const choy::Program &prgm, choy::TypeId id);
+parse_choy::function_decl export_decl(const choy::Program &prgm, const choy::Decl &decl);
 
-parse_ucs::modfile export_modfile(const weaver::Project &proj);
+parse_choy::modfile export_modfile(const choy::Project &proj);
 
 }

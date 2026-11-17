@@ -5,7 +5,7 @@
 
 #include <filesystem>
 
-namespace parse_ucs {
+namespace parse_choy {
 
 ExpressionImporter::ExpressionImporter(ucs::Netlist symbols, int region, bool autoDefine) : symbols(symbols) {
 	this->region.push_back(region);
@@ -293,7 +293,7 @@ arithmetic::Choice import_composition(const parse_expression::expression &syntax
 }
 
 /*bool Binder::define(vector<string> typeName, string name, vector<int> size, ucs::Netlist nets) {
-	weaver::TypeId type = prgm.findType(currModule, typeName);
+	choy::TypeId type = prgm.findType(currModule, typeName);
 	Instance newInst(type, name, size);
 	if (prgm.mods[currModule].terms[currTerm].symb.define(newInst)) {
 		vector<int> i;
@@ -314,7 +314,7 @@ void Binder::popScope() {
 
 
 
-std::vector<int> import_arrays(const std::vector<parse_ucs::expression> &syntax, tokenizer *tokens) {
+std::vector<int> import_arrays(const std::vector<parse_choy::expression> &syntax, tokenizer *tokens) {
 	vector<int> size;
 	for (auto i = syntax.begin(); i != syntax.end(); i++) {
 		string cnst = i->to_string("");
@@ -328,13 +328,13 @@ std::vector<int> import_arrays(const std::vector<parse_ucs::expression> &syntax,
 	return size;
 }
 
-weaver::Instance import_instance(weaver::TypeId type, const parse_ucs::variable_t<parse_ucs::expression> &syntax, tokenizer *tokens) {
+choy::Instance import_instance(choy::TypeId type, const parse_choy::variable_t<parse_choy::expression> &syntax, tokenizer *tokens) {
 	// TODO(edward.bingham) reset behavior
-	return weaver::Instance(type, syntax.name, import_arrays(syntax.size, tokens));
+	return choy::Instance(type, syntax.name, import_arrays(syntax.size, tokens));
 }
 
-bool import_declaration(vector<weaver::Instance> &result, const weaver::Program &prgm, int modIdx, const parse_ucs::function::declaration &syntax, tokenizer *tokens) {
-	weaver::TypeId type = prgm.findType(syntax.type.mod, syntax.type.name, modIdx);
+bool import_declaration(vector<choy::Instance> &result, const choy::Program &prgm, int modIdx, const parse_choy::function::declaration &syntax, tokenizer *tokens) {
+	choy::TypeId type = prgm.findType(syntax.type.mod, syntax.type.name, modIdx);
 	if (not type.defined()) {
 		printf("error: type not defined '%s'\n", syntax.type.to_string().c_str());
 		return false;
@@ -346,9 +346,9 @@ bool import_declaration(vector<weaver::Instance> &result, const weaver::Program 
 	return true;
 }
 
-void import_type_signature(vector<weaver::Typename> &result, const parse_ucs::function::declaration &syntax, tokenizer *tokens) {
+void import_type_signature(vector<choy::Typename> &result, const parse_choy::function::declaration &syntax, tokenizer *tokens) {
 	for (int k = 0; k < (int)syntax.name.size(); k++) {
-		weaver::Typename elem;
+		choy::Typename elem;
 		elem.mod = syntax.type.mod;
 		elem.name = syntax.type.name;
 		elem.size = import_arrays(syntax.name[k].size, tokens);
@@ -356,38 +356,38 @@ void import_type_signature(vector<weaver::Typename> &result, const parse_ucs::fu
 	}
 }
 
-weaver::Decl import_prototype(const weaver::Program &prgm, int modIdx, const parse_ucs::prototype &syntax, weaver::TypeId recvType, tokenizer *tokens) {
-	weaver::Decl result;
+choy::Decl import_prototype(const choy::Program &prgm, int modIdx, const parse_choy::prototype &syntax, choy::TypeId recvType, tokenizer *tokens) {
+	choy::Decl result;
 	result.name = syntax.name;
 	result.recv = recvType;
 	result.ret = prgm.findType(syntax.ret.mod, syntax.ret.name, modIdx);
-	vector<weaver::Typename> args;
+	vector<choy::Typename> args;
 	for (const auto &arg : syntax.args) {
 		import_declaration(result.args, prgm, modIdx, arg, tokens);
 		import_type_signature(args, arg, tokens);
 	}
-	result.argsHash = weaver::getHash(args);
+	result.argsHash = choy::getHash(args);
 	result.hashed = true;
 	result.qualified = true;
 	return result;
 }
 
-void import_symbols(weaver::Program &prgm, int modIdx, const parse_ucs::source &syntax, tokenizer *tokens) {
+void import_symbols(choy::Program &prgm, int modIdx, const parse_choy::source &syntax, tokenizer *tokens) {
 	for (auto i = syntax.types.begin(); i != syntax.types.end(); i++) {
-		prgm.mods[modIdx].createType(weaver::Type::typeOf(i->name));
+		prgm.mods[modIdx].createType(choy::Type::typeOf(i->name));
 	}
 }
 
-weaver::Typename import_type_signature(const parse_ucs::type_signature &syntax, tokenizer *tokens) {
-	weaver::Typename result;
+choy::Typename import_type_signature(const parse_choy::type_signature &syntax, tokenizer *tokens) {
+	choy::Typename result;
 	result.mod = syntax.type.mod;
 	result.name = syntax.type.name;
 	result.size = import_arrays(syntax.size, tokens);
 	return result;
 }
 
-weaver::Prototype import_signature(const parse_ucs::signature &syntax, tokenizer *tokens) {
-	weaver::Prototype result;
+choy::Prototype import_signature(const parse_choy::signature &syntax, tokenizer *tokens) {
+	choy::Prototype result;
 	result.mod = syntax.recv.mod;
 	result.name = syntax.name;
 	result.recv = syntax.recv.name;
@@ -401,15 +401,15 @@ weaver::Prototype import_signature(const parse_ucs::signature &syntax, tokenizer
 	return result;
 }
 
-weaver::Decl import_decl(const weaver::Program &prgm, int modIdx, const parse_ucs::function_decl &syntax, tokenizer *tokens) {
-	weaver::Decl result;
+choy::Decl import_decl(const choy::Program &prgm, int modIdx, const parse_choy::function_decl &syntax, tokenizer *tokens) {
+	choy::Decl result;
 	result.name = syntax.name;
 
 	if (not syntax.recv.empty()) {
 		result.recv = prgm.findType("", syntax.recv, modIdx);
 		if (not result.recv.defined()) {
 			printf("error: type not defined '%s'\n", syntax.recv.c_str());
-			return weaver::Decl();
+			return choy::Decl();
 		}
 	} else {
 		result.recv.mod = modIdx;
@@ -419,37 +419,37 @@ weaver::Decl import_decl(const weaver::Program &prgm, int modIdx, const parse_uc
 		result.ret = prgm.findType(syntax.ret.mod, syntax.ret.name, modIdx);
 		if (not result.ret.defined()) {
 			printf("error: type not defined '%s'\n", syntax.ret.to_string().c_str());
-			return weaver::Decl();
+			return choy::Decl();
 		}
 	}
 
-	vector<weaver::Typename> args;
+	vector<choy::Typename> args;
 	for (const auto &arg : syntax.args) {
 		import_declaration(result.args, prgm, modIdx, arg, tokens);
 		import_type_signature(args, arg, tokens);
 	}
-	result.argsHash = weaver::getHash(args);
+	result.argsHash = choy::getHash(args);
 	result.qualified = true;
 	result.hashed = true;
 	return result;
 }
 
-weaver::TermId import_term(const weaver::Project &proj, weaver::Program &prgm, weaver::Module &mod, int modIdx, const parse_ucs::function &syntax, tokenizer *tokens) {
-	weaver::Decl decl = import_decl(prgm, modIdx, syntax.decl, tokens);
+choy::TermId import_term(const choy::Project &proj, choy::Program &prgm, choy::Module &mod, int modIdx, const parse_choy::function &syntax, tokenizer *tokens) {
+	choy::Decl decl = import_decl(prgm, modIdx, syntax.decl, tokens);
 
-	weaver::TermId id = prgm.getTerm(modIdx, decl);
+	choy::TermId id = prgm.getTerm(modIdx, decl);
 
-	const weaver::Dialect *dialect = proj.getDialect(syntax.lang);
+	const choy::Dialect *dialect = proj.getDialect(syntax.lang);
 	if (dialect != nullptr and dialect->load != nullptr) {
 		std::any def = dialect->load(decl.name, syntax.body.get(), tokens);
 
-		id.var = mod.terms[id.index].createVariant(weaver::Variant(syntax.lang, def));
+		id.var = mod.terms[id.index].createVariant(choy::Variant(syntax.lang, def));
 		mod.terms[id.index].variants[id.var].fromSource = true;
 	}
 
 	for (auto i = syntax.impl.begin(); i != syntax.impl.end(); i++) {
-		weaver::Prototype proto = import_signature(*i, tokens);
-		vector<weaver::TermId> implTerm = prgm.findTerms(proto, modIdx);
+		choy::Prototype proto = import_signature(*i, tokens);
+		vector<choy::TermId> implTerm = prgm.findTerms(proto, modIdx);
 		if (implTerm.empty()) {
 			printf("error: term not defined '%s'\n", proto.to_string().c_str());
 		} else if (implTerm.size() != 1u) {
@@ -461,9 +461,9 @@ weaver::TermId import_term(const weaver::Project &proj, weaver::Program &prgm, w
 	return id;
 }
 
-std::vector<weaver::TermId> import_module(const weaver::Project &proj, weaver::Program &prgm, int modIdx, const parse_ucs::source &syntax, tokenizer *tokens) {
+std::vector<choy::TermId> import_module(const choy::Project &proj, choy::Program &prgm, int modIdx, const parse_choy::source &syntax, tokenizer *tokens) {
 	for (auto i = syntax.types.begin(); i != syntax.types.end(); i++) {
-		weaver::TypeId recvType = prgm.findType("", i->name, modIdx);
+		choy::TypeId recvType = prgm.findType("", i->name, modIdx);
 		for (auto j = i->members.begin(); j != i->members.end(); j++) {
 			import_declaration(prgm.typeAt(recvType).members, prgm, modIdx, *j, tokens);
 		}
@@ -473,17 +473,17 @@ std::vector<weaver::TermId> import_module(const weaver::Project &proj, weaver::P
 		}
 	}
 
-	std::vector<weaver::TermId> result;
+	std::vector<choy::TermId> result;
 	for (auto i = syntax.funcs.begin(); i != syntax.funcs.end(); i++) {
 		result.push_back(import_term(proj, prgm, prgm.mods[modIdx], modIdx, *i, tokens));
 	}
 	return result;
 }
 
-void import_modfile(weaver::Project &proj, const parse_ucs::modfile &syntax, tokenizer *tokens) {
+void import_modfile(choy::Project &proj, const parse_choy::modfile &syntax, tokenizer *tokens) {
 	for (auto i = syntax.deps.begin(); i != syntax.deps.end(); i++) {
 		for (auto j = i->path.begin(); j != i->path.end(); j++) {
-			proj.depends.push_back(weaver::Depend{j->first, j->second});
+			proj.depends.push_back(choy::Depend{j->first, j->second});
 		}
 	}
 

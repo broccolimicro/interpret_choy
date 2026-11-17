@@ -1,6 +1,6 @@
-# interpret_wv
+# interpret_choy
 
-A library for loading the parse tree in parse_wv into the structures found in the weaver library
+A library for loading the parse tree in parse_choy into the structures found in the choy library
 
 ## License
 

@@ -1,11 +1,11 @@
-#include <interpret_wv/export.h>
+#include <interpret_choy/export.h>
 
 #include <arithmetic/algorithm.h>
 #include <common/message.h>
 
 #include <parse/wrapper.h>
 
-namespace parse_ucs {
+namespace parse_choy {
 
 ExpressionExporter::ExpressionExporter(ucs::ConstNetlist nets) : nets(nets) {
 }
@@ -142,12 +142,12 @@ parse_expression::expression export_composition(const arithmetic::Choice &expr, 
 }
 
 
-parse_ucs::function::declaration export_declaration(const weaver::Program &prgm, const weaver::Instance &inst) {
-	parse_ucs::function::declaration result;
+parse_choy::function::declaration export_declaration(const choy::Program &prgm, const choy::Instance &inst) {
+	parse_choy::function::declaration result;
 	result.valid = true;
 
 	result.type = export_type_name(prgm, inst.type);
-	parse_ucs::function::declaration::variable var;
+	parse_choy::function::declaration::variable var;
 	var.name = inst.name;
 	for (int sz : inst.size) {
 		var.size.push_back(export_expression(arithmetic::Expression::intOf(sz), ucs::ConstNetlist()));
@@ -158,8 +158,8 @@ parse_ucs::function::declaration export_declaration(const weaver::Program &prgm,
 	return result;
 }
 
-parse_ucs::type_name export_type_name(const weaver::Program &prgm, weaver::TypeId id) {
-	parse_ucs::type_name result;
+parse_choy::type_name export_type_name(const choy::Program &prgm, choy::TypeId id) {
+	parse_choy::type_name result;
 	if (not prgm.typeValid(id)) {
 		return result;
 	}
@@ -169,8 +169,8 @@ parse_ucs::type_name export_type_name(const weaver::Program &prgm, weaver::TypeI
 	return result;
 }
 
-parse_ucs::function_decl export_decl(const weaver::Program &prgm, const weaver::Decl &decl) {
-	parse_ucs::function_decl result;
+parse_choy::function_decl export_decl(const choy::Program &prgm, const choy::Decl &decl) {
+	parse_choy::function_decl result;
 	result.valid = true;
 
 	result.name = decl.name;
@@ -187,10 +187,10 @@ parse_ucs::function_decl export_decl(const weaver::Program &prgm, const weaver::
 	return result;
 }
 
-parse_ucs::modfile export_modfile(const weaver::Project &proj) {
-	parse_ucs::modfile result;
+parse_choy::modfile export_modfile(const choy::Project &proj) {
+	parse_choy::modfile result;
 	result.valid = true;
-	parse_ucs::require dep;
+	parse_choy::require dep;
 	dep.valid = true;
 
 	for (auto i = proj.depends.begin(); i != proj.depends.end(); i++) {
@@ -198,13 +198,13 @@ parse_ucs::modfile export_modfile(const weaver::Project &proj) {
 	}
 	result.deps.push_back(dep);
 
-	parse_ucs::attribute modAttr;
+	parse_choy::attribute modAttr;
 	modAttr.valid = true;
 	modAttr.name = "module";
 	modAttr.value = "\"" + proj.modName + "\"";
 	result.attrs.push_back(modAttr);
 
-	parse_ucs::attribute techAttr;
+	parse_choy::attribute techAttr;
 	techAttr.valid = true;
 	techAttr.name = "tech";
 	techAttr.value = "\"" + proj.tech.name + "\"";

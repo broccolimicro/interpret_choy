@@ -1,10 +1,10 @@
 #pragma once
 
 #include <parse/tokenizer.h>
-#include <parse_ucs/source.h>
-#include <parse_ucs/expression.h>
-#include <parse_ucs/prototype.h>
-#include <parse_ucs/modfile.h>
+#include <parse_choy/source.h>
+#include <parse_choy/expression.h>
+#include <parse_choy/prototype.h>
+#include <parse_choy/modfile.h>
 
 #include <parse_expression/expression.h>
 #include <parse_expression/assignment.h>
@@ -16,13 +16,13 @@
 #include <arithmetic/expression.h>
 #include <arithmetic/action.h>
 #include <arithmetic/state.h>
-#include <weaver/program.h>
-#include <weaver/project.h>
+#include <choy/program.h>
+#include <choy/project.h>
 
 using std::vector;
 using std::string;
 
-namespace parse_ucs {
+namespace parse_choy {
 
 struct ExpressionImporter : parse_expression::Importer<arithmetic::Expression> {
 	ucs::Netlist symbols;
@@ -69,15 +69,15 @@ void pushScope();
 void popScope();*/
 
 // Loading the program
-bool import_declaration(vector<weaver::Instance> &result, const weaver::Program &prgm, int modIdx, const parse_ucs::function::declaration &syntax, tokenizer *tokens);
-void import_type_signature(vector<weaver::Typename> &result, const parse_ucs::function::declaration &syntax, tokenizer *tokens);
-weaver::Decl import_prototype(const weaver::Program &prgm, int modIdx, const parse_ucs::prototype &syntax, weaver::TypeId recvType, tokenizer *tokens);
-void import_symbols(weaver::Program &prgm, int modIdx, const parse_ucs::source &syntax, tokenizer *tokens);
-weaver::Typename import_type_signature(const parse_ucs::type_signature &syntax, tokenizer *tokens);
-weaver::Prototype import_signature(const parse_ucs::signature &syntax, tokenizer *tokens);
-weaver::Decl import_decl(const weaver::Program &prgm, int modIdx, const parse_ucs::function_decl &syntax, tokenizer *tokens);
-weaver::TermId import_term(const weaver::Project &proj, weaver::Program &prgm, weaver::Module &mod, int modIdx, const parse_ucs::function &syntax, tokenizer *tokens);
-std::vector<weaver::TermId> import_module(const weaver::Project &proj, weaver::Program &prgm, int modIdx, const parse_ucs::source &syntax, tokenizer *tokens);
-void import_modfile(weaver::Project &proj, const parse_ucs::modfile &syntax, tokenizer *tokens);
+bool import_declaration(vector<choy::Instance> &result, const choy::Program &prgm, int modIdx, const parse_choy::function::declaration &syntax, tokenizer *tokens);
+void import_type_signature(vector<choy::Typename> &result, const parse_choy::function::declaration &syntax, tokenizer *tokens);
+choy::Decl import_prototype(const choy::Program &prgm, int modIdx, const parse_choy::prototype &syntax, choy::TypeId recvType, tokenizer *tokens);
+void import_symbols(choy::Program &prgm, int modIdx, const parse_choy::source &syntax, tokenizer *tokens);
+choy::Typename import_type_signature(const parse_choy::type_signature &syntax, tokenizer *tokens);
+choy::Prototype import_signature(const parse_choy::signature &syntax, tokenizer *tokens);
+choy::Decl import_decl(const choy::Program &prgm, int modIdx, const parse_choy::function_decl &syntax, tokenizer *tokens);
+choy::TermId import_term(const choy::Project &proj, choy::Program &prgm, choy::Module &mod, int modIdx, const parse_choy::function &syntax, tokenizer *tokens);
+std::vector<choy::TermId> import_module(const choy::Project &proj, choy::Program &prgm, int modIdx, const parse_choy::source &syntax, tokenizer *tokens);
+void import_modfile(choy::Project &proj, const parse_choy::modfile &syntax, tokenizer *tokens);
 
 }
